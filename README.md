@@ -120,6 +120,26 @@ flutter build ios
 
 ---
 
+## 🌐 Netlify 浏览器部署
+
+仓库根目录的 `netlify.toml` 使用 `scripts/netlify-build.sh` 安装固定版本的
+Flutter 3.41.5，安装锁定的依赖并执行 Flutter Web release 构建。发布目录为
+`wangwang_phone/build/web`，无需 Next.js、npm 构建命令或 Next.js 插件。
+将 Netlify 的 Base directory 保持为仓库根目录，重新部署即可使用此配置。
+
+本地预览（需要 Flutter 3.41.5）：
+
+```bash
+cd wangwang_phone
+flutter pub get --enforce-lockfile
+flutter run -d chrome
+```
+
+浏览器版本使用已有的 SharedPreferences 机制保存本机设置和启动密码；
+清除网站数据会移除这些设置。启动密码仅用于虚拟手机的本地锁屏，不是网站账户登录。
+TXT 人设通过文件选择器读取。天气定位需要 HTTPS 和浏览器位置权限，
+天气接口也需要允许跨域请求。
+
 ## 📁 项目结构
 
 ```

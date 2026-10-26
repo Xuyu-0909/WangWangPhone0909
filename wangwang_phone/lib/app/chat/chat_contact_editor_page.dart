@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -260,10 +259,8 @@ class _ContactEditorPageState extends State<ContactEditorPage> {
     if (file.bytes != null) {
       return utf8.decode(file.bytes!, allowMalformed: true);
     }
-    if (file.path != null) {
-      return File(file.path!).readAsString();
-    }
-    throw const FormatException('无法读取文件内容');
+    final bytes = await file.xFile.readAsBytes();
+    return utf8.decode(bytes, allowMalformed: true);
   }
 
   void _applyDraft(ChatContactDraft draft) {

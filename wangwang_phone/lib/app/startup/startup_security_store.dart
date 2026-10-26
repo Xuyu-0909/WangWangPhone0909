@@ -1,10 +1,15 @@
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 const String startupPasscodeSettingKey = 'security.passcode';
 
 StartupSecurityStore buildDefaultStartupSecurityStore() {
+  if (kIsWeb) {
+    return SharedPreferencesStartupSecurityStore();
+  }
   return SqliteStartupSecurityStore();
 }
 
@@ -19,6 +24,30 @@ abstract class StartupSecurityStore {
   Future<bool> hasPasscode() async {
     final passcode = await readPasscode();
     return passcode != null && passcode.length == 6;
+  }
+}
+
+// The virtual phone's local lock follows the existing preferences storage model
+// in browsers, where native SQLite and application support paths are unavailable.
+class SharedPreferencesStartupSecurityStore extends StartupSecurityStore {
+  @override
+  Future<void> initialize() async {
+    await SharedPreferences.getInstance();
+  }
+
+  @override
+  Future<String?> readPasscode() async {
+    final preferences = await SharedPreferences.getInstance();
+    return preferences.getString(startupPasscodeSettingKey);
+  }
+
+  @override
+  Future<void> writePasscode(String passcode) async {
+    final preferences = await SharedPreferences.getInstance();
+    final saved = await preferences.setString(startupPasscodeSettingKey, passcode);
+    if (!saved) {
+      throw StateError('无法保存启动密码');
+    }
   }
 }
 

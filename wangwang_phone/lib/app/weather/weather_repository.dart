@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -76,7 +77,10 @@ class DeviceWeatherLocationProvider extends WeatherLocationProvider {
         );
       }
 
-      Position? position = await Geolocator.getLastKnownPosition();
+      // The web geolocation plugin does not implement last-known position.
+      Position? position = kIsWeb
+          ? null
+          : await Geolocator.getLastKnownPosition();
       position ??= await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.low,
