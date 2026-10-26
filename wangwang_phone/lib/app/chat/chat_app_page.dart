@@ -1502,7 +1502,7 @@ class _MessageBodyCard extends StatelessWidget {
                 height: 1.45,
               ),
             ),
-          ),
+          ],
         ),
       );
     }
